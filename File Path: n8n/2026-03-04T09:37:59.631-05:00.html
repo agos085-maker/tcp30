@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otomasi WhatsApp/Telegram - Tingkatkan Efisiensi Bisnis Anda</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 150px 0 100px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: #10b981;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #059669;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #1e293b;
+        }
+
+        .services {
+            background: #f8fafc;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-card h3 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .advantages {
+            background: white;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .advantage-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .advantage-icon {
+            width: 60px;
+            height: 60px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .pricing {
+            background: #f8fafc;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid #2563eb;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured .price {
+            background: #2563eb;
+            color: white;
+        }
+
+        .pricing-card h3 {
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .price {
+            background: #10b981;
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .price span {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .testimonials {
+            background: white;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .testimonial-author {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .faq {
+            background: #f8fafc;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .faq-question h4 {
+            color: #1e293b;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+
+        .faq-answer p {
+            padding: 0 1.5rem 1.5rem;
+            color: #64748b;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+
+        .faq-item.active .faq-question {
+            background: #2563eb;
+            color: white;
+        }
+
+        .faq-item.active .faq-question h4 {
+            color: white;
+        }
+
+        .contact {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .contact-form {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.9);
+            font-size: 1rem;
+        }
+
+        .contact-form input[type="submit"] {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .contact-form input[type="submit"]:hover {
+            background: #f1f5f9;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #475569;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">OtomasiBisnis</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Beranda</a></li>
+                    <li><a href="#services">Layanan</a></li>
+                    <li><a href="#advantages">Keunggulan</a></li>
+                    <li><a href="#pricing">Harga</a></li>
+                    <li><a href="#contact">Kontak</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Tingkatkan Efisiensi Bisnis Anda dengan Otomasi WhatsApp/Telegram</h1>
+            <p>Otomasi pesan yang cerdas dan efektif untuk bisnis Anda. 24/7 tanpa henti, tanpa coding, aman dan terpercaya.</p>
+            <a href="#contact" class="cta-button">Konsultasi Gratis</a>
+        </div>
+    </section>
+
+    <section id="services" class="section services">
+        <div class="container">
+            <h2 class="section-title">Layanan Kami</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>Auto-reply</h3>
+                    <p>Tanggap pesan otomatis 24/7 dengan jawaban yang relevan berdasarkan kata kunci.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Broadcast Pesan</h3>
+                    <p>Kirim pesan massal ke ribuan kontak sekaligus dengan personalisasi.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Integrasi CRM</h3>
+                    <p>Sinkronkan otomasi dengan sistem CRM Anda untuk manajemen lead yang lebih baik.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Notifikasi Transaksi</h3>
+                    <p>Kirim notifikasi otomatis untuk setiap transaksi, konfirmasi pembayaran, dan update status.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Chatbot AI</h3>
+                    <p>Chatbot cerdas dengan NLP untuk interaksi yang lebih natural dan kontekstual.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Analytics Dashboard</h3>
+                    <p>Monitor performa otomasi dengan dashboard real-time dan laporan detail.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="advantages" class="section advantages">
+        <div class="container">
+            <h2 class="section-title">Keunggulan Kami</h2>
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">24/7</div>
+                    <h3>24/7 Berjalan</h3>
+                    <p>Otomasi berjalan tanpa henti, melayani pelanggan kapan saja.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">⚡</div>
+                    <h3>Tanpa Coding</h3>
+                    <p>Pengaturan mudah tanpa perlu pengetahuan pemrograman.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🔒</div>
+                    <h3>Aman & Terpercaya</h3>
+                    <p>Keamanan data terjamin dengan enkripsi dan backup otomatis.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">💬</div>
+                    <h3>Dukungan Pelanggan</h3>
+                    <p>Dukungan teknis cepat tanggap dari tim ahli kami.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="section pricing">
+        <div class="container">
+            <h2 class="section-title">Pilih Paket yang Tepat</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Basic</h3>
+                    <div class="price">
+                        <span>Rp 500.000</span>/bulan
+                    </div>
+                    <ul>
+                        <li>✅ Auto-reply dasar</li>
+                        <li>✅ Broadcast hingga 1000 kontak</li>
+                        <li>✅ 1 integrasi CRM</li>
+                        <li>✅ Analytics dasar</li>
+                        <li>❌ Chatbot AI</li>
+                    </ul>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Pro</h3>
+                    <div class="price">
+                        <span>Rp 1.500.000</span>/bulan
+                    </div>
+                    <ul>
+                        <li>✅ Semua fitur Basic</li>
+                        <li>✅ Chatbot AI canggih</li>
+                        <li>✅ Broadcast unlimited</li>
+                        <li>✅ 5 integrasi CRM</li>
+                        <li>✅ Priority support</li>
+                    </ul>
+                </div>
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">
+                        <span>Custom</span>
+                    </div>
+                    <ul>
+                        <li>✅ Semua fitur Pro</li>
+                        <li>✅ Custom development</li>
+                        <li>✅ Dedicated account manager</li>
+                        <li>✅ SLA 99.9%</li>
+                        <li>✅ Training & consulting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="section testimonials">
+        <div class="container">
+            <h2 class="section-title">Apa Kata Klien Kami</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">Otomasi WhatsApp dari OtomasiBisnis meningkatkan efisiensi customer service kami hingga 70%. Respon pelanggan jadi lebih cepat!</div>
+                    <div class="testimonial-author">Budi Santoso - Toko Online XYZ</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-text">Integrasi dengan CRM kami berjalan mulus. Sekarang lead management jadi lebih terorganisir dan konversi naik 40%.</div>
+                    <div class="testimonial-author">Sarah Wijaya - PT. Digital Solution</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-text">Fitur broadcast sangat membantu untuk promosi. Hemat waktu dan biaya marketing kami berkurang signifikan.</div>
+                    <div class="testimonial-author">Agus Rahman - Warung Digital</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section faq">
+        <div class="container">
+            <h2 class="section-title">Pertanyaan Umum</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Apakah otomasi WhatsApp/Telegram aman?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ya, sangat aman. Kami menggunakan enkripsi end-to-end dan backup otomatis. Data Anda terlindungi dengan standar keamanan tertinggi.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Apakah bisnis saya cocok menggunakan layanan ini?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ideal untuk berbagai bisnis: e-commerce, retail, jasa, pendidikan, kesehatan, dll. Jika Anda butuh komunikasi efisien dengan pelanggan, ini solusinya.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Berapa lama waktu implementasi?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Basic: 1-2 hari. Pro: 3-5 hari. Enterprise: custom sesuai kebutuhan. Kami juga menyediakan training untuk tim Anda.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Apakah ada jaminan uang kembali?</h4>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Kami menawarkan garansi 30 hari uang kembali jika Anda tidak puas dengan layanan kami. Syarat dan ketentuan berlaku.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section contact">
+        <div class="container">
+            <h2 class="section-title">Hubungi Kami</h2>
+            <div class="contact-grid">
+                <div>
+                    <h3>Informasi Kontak</h3>
+                    <p>Email: info@otomasibisnis.com</p>
+                    <p>Telepon: +62 812-3456-7890</p>
+                    <p>Jam Kerja: Senin - Jumat, 09.00 - 18.00 WIB</p>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Instagram</a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Form Konsultasi Gratis</h3>
+                    <form>
+                        <input type="text" placeholder="Nama Lengkap" required>
+                        <input type="email" placeholder="Email" required>
+                        <input type="tel" placeholder="No. Telepon" required>
+                        <textarea rows="5" placeholder="Ceritakan kebutuhan bisnis Anda..." required></textarea>
+                        <input type="submit" value="Kirim Konsultasi">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 OtomasiBisnis. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                const answer = faqItem.querySelector('.faq-answer');
+                const icon = question.querySelector('span');
+
+                if (faqItem.classList.contains('active')) {
+                    faqItem.classList.remove('active');
+                    answer.style.maxHeight = '0';
+                    icon.textContent = '+';
+                } else {
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.classList.remove('active');
+                        item.querySelector('.faq-answer').style.maxHeight = '0';
+                        item.querySelector('span').textContent = '+';
+                    });
+                    faqItem.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                    icon.textContent = '-';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
