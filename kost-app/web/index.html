@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Kost</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222535;
+    --border: #2e3148;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --text: #e8eaf6;
+    --muted: #7b80a0;
+    --harian: #ffb347;
+    --bulanan: #6c63ff;
+    --success: #43e97b;
+    --danger: #ff6584;
+    --radius: 14px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 8px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .logo-text span { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px; font-weight: 500;
+    color: var(--muted);
+    transition: all .2s;
+    margin-bottom: 4px;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(108,99,255,.15); color: var(--accent); }
+  .nav-icon { font-size: 18px; }
+
+  /* Main */
+  .main { margin-left: 240px; flex: 1; padding: 32px; max-width: 1100px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Header */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title { font-size: 26px; font-weight: 800; }
+  .page-title span { color: var(--accent); }
+
+  /* Stats */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .stat-card.c1::before { background: linear-gradient(90deg,var(--accent),var(--accent2)); }
+  .stat-card.c2::before { background: linear-gradient(90deg,var(--harian),#ff9a44); }
+  .stat-card.c3::before { background: linear-gradient(90deg,var(--accent3),#38f9d7); }
+  .stat-card.c4::before { background: linear-gradient(90deg,var(--accent2),#f093fb); }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Table */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 14px; font-weight: 600;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; padding: 12px 16px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); background: var(--surface2);
+    font-weight: 600;
+  }
+  td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-harian { background: rgba(255,179,71,.15); color: var(--harian); }
+  .badge-bulanan { background: rgba(108,99,255,.15); color: var(--accent); }
+  .badge-aktif { background: rgba(67,233,123,.12); color: var(--accent3); }
+  .badge-keluar { background: rgba(255,101,132,.12); color: var(--danger); }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-full { grid-column: 1/-1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .form-group input, .form-group select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: inherit; font-size: 14px;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,.15);
+  }
+  .harga-preview {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    color: var(--accent); font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .2s; display: inline-flex;
+    align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #7c74ff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,99,255,.4); }
+  .btn-success { background: var(--accent3); color: #000; }
+  .btn-success:hover { opacity: .9; }
+  .btn-danger { background: transparent; border: 1px solid var(--border); color: var(--danger); }
+  .btn-danger:hover { background: rgba(255,101,132,.1); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-ghost { background: var(--surface2); color: var(--text); }
+  .btn-ghost:hover { background: var(--border); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    width: 520px; max-width: 95vw;
+    transform: translateY(20px);
+    transition: transform .2s;
+    box-shadow: var(--shadow);
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .modal-title { font-size: 18px; font-weight: 700; }
+  .modal-close {
+    background: var(--surface2); border: none; color: var(--muted);
+    width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  /* Toast */
+  .toast-container {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    animation: toastIn .3s ease; max-width: 320px;
+    box-shadow: var(--shadow);
+  }
+  .toast-success { background: #1a3a2a; border: 1px solid var(--accent3); color: var(--accent3); }
+  .toast-error { background: #3a1a1f; border: 1px solid var(--danger); color: var(--danger); }
+  .toast-info { background: #1a1f3a; border: 1px solid var(--accent); color: var(--accent); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+  .actions { display: flex; gap: 6px; }
+  .loading { opacity: .5; pointer-events: none; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 60px; padding: 16px 8px; }
+    .logo-text, .nav-item span { display: none; }
+    .main { margin-left: 60px; padding: 16px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🏠</div>
+      <div class="logo-text" id="sidebarKostName">Kost App<span>Manajemen Kost</span></div>
+    </div>
+    <button class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </button>
+    <button class="nav-item" onclick="showPage('penghuni')">
+      <span class="nav-icon">👥</span><span>Penghuni</span>
+    </button>
+    <button class="nav-item" onclick="showPage('settings')">
+      <span class="nav-icon">⚙️</span><span>Pengaturan</span>
+    </button>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard <span id="dashKostName"></span></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card c1">
+          <div class="stat-label">Total Penghuni</div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-sub">Semua kamar</div>
+        </div>
+        <div class="stat-card c2">
+          <div class="stat-label">Aktif</div>
+          <div class="stat-value" id="statAktif">0</div>
+          <div class="stat-sub">Penghuni aktif</div>
+        </div>
+        <div class="stat-card c3">
+          <div class="stat-label">Harian</div>
+          <div class="stat-value" id="statHarian">0</div>
+          <div class="stat-sub">Tipe harian</div>
+        </div>
+        <div class="stat-card c4">
+          <div class="stat-label">Bulanan</div>
+          <div class="stat-value" id="statBulanan">0</div>
+          <div class="stat-sub">Tipe bulanan</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span>⏰ Check-in Terbaru</span>
+        </div>
+        <table>
+          <thead><tr><th>Kamar</th><th>Nama</th><th>Check-in</th><th>Tipe</th><th>Harga</th></tr></thead>
+          <tbody id="recentTable"><tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div>Belum ada data</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Penghuni -->
+    <div class="page" id="page-penghuni">
+      <div class="page-header">
+        <div class="page-title">Data <span>Penghuni</span></div>
+        <button class="btn btn-primary" onclick="openAddModal()">＋ Tambah Penghuni</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span>Daftar Penghuni</span>
+          <input id="searchInput" placeholder="🔍 Cari nama / kamar…"
+            style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);font-size:13px;outline:none;width:200px"
+            oninput="filterTable()">
+        </div>
+        <table>
+          <thead><tr><th>Kamar</th><th>Nama</th><th>No. HP</th><th>Check-in</th><th>Tipe</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="penghuniTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div class="page-title">⚙️ <span>Pengaturan</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:20px">🏠 Info Kost</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="form-group"><label>Nama Kost</label><input id="setNamaKost" placeholder="Nama kost Anda"></div>
+            <div class="form-group"><label>Alamat</label><input id="setAlamat" placeholder="Alamat lengkap"></div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:20px">💰 Tarif Kamar</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="form-group">
+              <label>Harga Harian (Rp)</label>
+              <input id="setHargaHarian" type="number" placeholder="75000">
+            </div>
+            <div class="form-group">
+              <label>Harga Bulanan (Rp)</label>
+              <input id="setHargaBulanan" type="number" placeholder="800000">
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px;grid-column:1/-1">
+          <div style="font-size:15px;font-weight:700;margin-bottom:20px">📱 Telegram Bot</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="form-group">
+              <label>Bot Token</label>
+              <input id="setTelegramToken" placeholder="123456:ABCdef...">
+            </div>
+            <div class="form-group">
+              <label>Chat ID</label>
+              <input id="setTelegramChatID" placeholder="-100123456789">
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:12px">
+            💡 Buat bot via @BotFather, dapatkan Chat ID via @userinfobot atau @getmyid_bot
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Simpan Pengaturan</button>
+        <button class="btn btn-ghost" onclick="loadSettings()">↺ Reset</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Tambah Penghuni</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>No. Kamar *</label>
+        <input id="fKamar" placeholder="101">
+      </div>
+      <div class="form-group">
+        <label>Nama Penghuni *</label>
+        <input id="fNama" placeholder="Nama lengkap">
+      </div>
+      <div class="form-group">
+        <label>No. HP</label>
+        <input id="fHP" placeholder="08xxx">
+      </div>
+      <div class="form-group">
+        <label>Tanggal Check-in *</label>
+        <input id="fCheckIn" type="date">
+      </div>
+      <div class="form-group">
+        <label>Tipe Harga *</label>
+        <select id="fTipe" onchange="updateHargaPreview()">
+          <option value="bulanan">Bulanan</option>
+          <option value="harian">Harian</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Harga (otomatis)</label>
+        <div class="harga-preview" id="hargaPreview">Rp —</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-success" onclick="submitAdd()" id="btnSubmit">💾 Simpan & Kirim Invoice</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+let allPenghuni = [];
+let settings = {};
+
+// ─────────────────────────
+// Navigation
+// ─────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'penghuni') loadPenghuni();
+  if (name === 'settings') loadSettings();
+}
+
+// ─────────────────────────
+// Toast
+// ─────────────────────────
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  el.innerHTML = icons[type] + ' ' + msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ─────────────────────────
+// Format
+// ─────────────────────────
+function formatRp(n) {
+  return 'Rp ' + Number(n).toLocaleString('id-ID');
+}
+function formatDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// ─────────────────────────
+// Settings
+// ─────────────────────────
+async function loadSettings() {
+  const r = await fetch('/api/settings');
+  settings = await r.json();
+  document.getElementById('setNamaKost').value = settings.nama_kost || '';
+  document.getElementById('setAlamat').value = settings.alamat || '';
+  document.getElementById('setHargaHarian').value = settings.harga_harian || '';
+  document.getElementById('setHargaBulanan').value = settings.harga_bulanan || '';
+  document.getElementById('setTelegramToken').value = settings.telegram_token || '';
+  document.getElementById('setTelegramChatID').value = settings.telegram_chat_id || '';
+  document.getElementById('sidebarKostName').childNodes[0].textContent = settings.nama_kost || 'Kost';
+  document.getElementById('dashKostName').textContent = settings.nama_kost || '';
+  updateHargaPreview();
+}
+async function saveSettings() {
+  const data = {
+    nama_kost: document.getElementById('setNamaKost').value,
+    alamat: document.getElementById('setAlamat').value,
+    harga_harian: parseFloat(document.getElementById('setHargaHarian').value) || 0,
+    harga_bulanan: parseFloat(document.getElementById('setHargaBulanan').value) || 0,
+    telegram_token: document.getElementById('setTelegramToken').value,
+    telegram_chat_id: document.getElementById('setTelegramChatID').value,
+  };
+  await fetch('/api/settings', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  await loadSettings();
+  toast('Pengaturan berhasil disimpan!', 'success');
+}
+
+// ─────────────────────────
+// Dashboard
+// ─────────────────────────
+async function loadDashboard() {
+  const r = await fetch('/api/penghuni');
+  allPenghuni = await r.json();
+  const aktif = allPenghuni.filter(p => p.status === 'aktif');
+  document.getElementById('statTotal').textContent = allPenghuni.length;
+  document.getElementById('statAktif').textContent = aktif.length;
+  document.getElementById('statHarian').textContent = aktif.filter(p => p.tipe_harga === 'harian').length;
+  document.getElementById('statBulanan').textContent = aktif.filter(p => p.tipe_harga === 'bulanan').length;
+
+  const recent = [...allPenghuni].slice(0, 8);
+  const tbody = document.getElementById('recentTable');
+  if (!recent.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div>Belum ada penghuni</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = recent.map(p => `
+    <tr>
+      <td><strong>${p.no_kamar}</strong></td>
+      <td>${p.nama}</td>
+      <td>${formatDate(p.check_in)}</td>
+      <td><span class="badge badge-${p.tipe_harga}">${p.tipe_harga}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace">${formatRp(p.harga)}</td>
+    </tr>
+  `).join('');
+}
+
+// ─────────────────────────
+// Penghuni List
+// ─────────────────────────
+async function loadPenghuni() {
+  const r = await fetch('/api/penghuni');
+  allPenghuni = await r.json();
+  renderTable(allPenghuni);
+}
+function renderTable(data) {
+  const tbody = document.getElementById('penghuniTable');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">🏠</div>Belum ada penghuni. Klik "Tambah Penghuni"</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td><strong style="color:var(--accent)">${p.no_kamar}</strong></td>
+      <td>${p.nama}</td>
+      <td style="color:var(--muted)">${p.no_hp || '-'}</td>
+      <td>${formatDate(p.check_in)}</td>
+      <td><span class="badge badge-${p.tipe_harga}">${p.tipe_harga}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:13px">${formatRp(p.harga)}</td>
+      <td><span class="badge badge-${p.status}">${p.status}</span></td>
+      <td>
+        <div class="actions">
+          <a href="/api/invoice/${p.id}" target="_blank"><button class="btn btn-sm btn-ghost" title="Download Invoice">📄</button></a>
+          <button class="btn btn-sm btn-ghost" onclick="resend(${p.id})" title="Kirim ulang ke Telegram">📨</button>
+          <button class="btn btn-sm btn-danger" onclick="checkout(${p.id})" title="Check-out">🚪</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderTable(allPenghuni.filter(p =>
+    p.nama.toLowerCase().includes(q) || p.no_kamar.toLowerCase().includes(q)
+  ));
+}
+async function checkout(id) {
+  if (!confirm('Check-out penghuni ini?')) return;
+  await fetch('/api/penghuni/' + id, { method: 'DELETE' });
+  toast('Penghuni berhasil check-out', 'success');
+  loadPenghuni();
+}
+async function resend(id) {
+  toast('Mengirim invoice ke Telegram…', 'info');
+  const r = await fetch('/api/resend/' + id, { method: 'POST' });
+  const d = await r.json();
+  if (d.error) toast('Gagal: ' + d.error, 'error');
+  else toast('Invoice berhasil dikirim ke Telegram!', 'success');
+}
+
+// ─────────────────────────
+// Add Modal
+// ─────────────────────────
+function openAddModal() {
+  document.getElementById('fKamar').value = '';
+  document.getElementById('fNama').value = '';
+  document.getElementById('fHP').value = '';
+  document.getElementById('fCheckIn').value = new Date().toISOString().slice(0,10);
+  document.getElementById('fTipe').value = 'bulanan';
+  updateHargaPreview();
+  document.getElementById('addModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('addModal').classList.remove('show');
+}
+function updateHargaPreview() {
+  const tipe = document.getElementById('fTipe')?.value;
+  const h = tipe === 'harian' ? settings.harga_harian : settings.harga_bulanan;
+  const el = document.getElementById('hargaPreview');
+  if (el) el.textContent = h ? formatRp(h) : 'Rp —';
+}
+async function submitAdd() {
+  const kamar = document.getElementById('fKamar').value.trim();
+  const nama = document.getElementById('fNama').value.trim();
+  const checkIn = document.getElementById('fCheckIn').value;
+  if (!kamar || !nama || !checkIn) { toast('Isi semua field wajib!', 'error'); return; }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.classList.add('loading');
+  btn.textContent = '⏳ Menyimpan…';
+
+  const data = {
+    no_kamar: kamar,
+    nama,
+    no_hp: document.getElementById('fHP').value,
+    check_in: checkIn,
+    tipe_harga: document.getElementById('fTipe').value,
+  };
+
+  try {
+    const r = await fetch('/api/penghuni', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    const res = await r.json();
+    closeModal();
+    toast('✅ Penghuni ditambahkan! Invoice PDF dibuat.', 'success');
+    if (res.telegram_error) toast('⚠️ Telegram: ' + res.telegram_error, 'error');
+    else if (settings.telegram_token) toast('📨 Invoice dikirim ke Telegram!', 'success');
+    loadPenghuni();
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = '💾 Simpan & Kirim Invoice';
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('addModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─────────────────────────
+// Init
+// ─────────────────────────
+(async () => {
+  await loadSettings();
+  loadDashboard();
+})();
+</script>
+</body>
+</html>
